@@ -1,22 +1,23 @@
 # DeepRec ModelZoo Benchmark
 ## Stand-alone benchmark
 ### Benchmark preparation
-1. Install stock tf 1.15.5  
+1. Install python **3.6**, please note version is **3.6**
+2. Install stock tf 1.15.5  
     ```
     pip install tensorflow==1.15.5
     ```
-2. Prepare DeepRec whl package and install when test DeepRec.
+3. Prepare DeepRec whl package and install when test DeepRec.
    ```
    pip uninstall tensorflow
    pip install $(DEEPREC_WHL_PATH)   
    ```
-3. Install tensorflow-estimator for DeepRec.***(Only for WDL model!)*** 
+4. Install tensorflow-estimator for DeepRec.***(Only for WDL model!)*** 
    ```
    pip uninstall tensorflow-estimator
    pip install $(ESTIMATOR_FOR_DEEPREC_WHL_PATH)
    ```
-4. Prepare data refer to README in 'data' folder **(Available in this repo)**.
-5. Prepare jemalloc.so both version 2.4.4 and 2.5.1 **(Available in this repo)**, put them into work path where `train.py` exist.
+5. Prepare data refer to README in 'data' folder **(Available in this repo)**.
+6. Prepare jemalloc.so both version 2.4.4 and 2.5.1 **(Available in this repo)**, put them into work path where `train.py` exist.
 
 ### Which parameters need test
 - Jemalloc version, include `None`,`v2.4.4`,`v2.5.1`
