@@ -15,8 +15,8 @@
    pip uninstall tensorflow-estimator
    pip install $(ESTIMATOR_FOR_DEEPREC_WHL_PATH)
    ```
-4. Prepare data refer to README in 'data' folder.
-5. Prepare jemalloc.so both version 2.4.4 and 2.5.1, put them into work path where `train.py` exist.
+4. Prepare data refer to README in 'data' folder **(Available in this repo)**.
+5. Prepare jemalloc.so both version 2.4.4 and 2.5.1 **(Available in this repo)**, put them into work path where `train.py` exist.
 
 ### Which parameters need test
 - Jemalloc version, include `None`,`v2.4.4`,`v2.5.1`
@@ -27,7 +27,7 @@
 ### How to benchmark
 1. Clone DeepRec repo, and `cd` into `modelzoo/$(TEST_MODEL)`.  
    Or just copy `train.py` script into your workspace, for DIEN and DIN, `./script/` is also needed.
-2. Prepare tf environment, dataset and jemalloc lib.
+2. Prepare tf environment, dataset and jemalloc lib. For convenience, please use docker or python virtual env to create tf env.
 3. Set TensorPoolAllocator option.
    - Enable
     ```
