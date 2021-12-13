@@ -76,3 +76,129 @@
         # Don't forget to enable DeepRec feature for DeepRec test.
         python train.py --bf16
         ```
+
+### How to benchmark distributed training in K8S
+
+#### 1. Prepare a K8S cluster
+
+`kubectl get nodes -o wide` shows the nodes of K8S cluster.
+
+#### 2. Prepare docker image
+
+Place image into where each node can access it, like docker-hub's official repo.
+
+#### 3. Prepare yaml file to create training job.
+
+Please keep the <u>***containers setting***</u> of Cheif, Worker and PS the same.
+
+Pod's template <u>***(The underlined ones need attention)***</u>:
+
+- ***<u>`replicas: ` </u>*** the num of copies of pod(chief, worker and ps).
+
+- `affinity:podAntiAffinity:` antiaffinity setting to distribute pods on different nodes as much as possible. Not need to Cheif, because there is only one Cheif.
+
+- `volumes:` the statement of shared storage that will be mounted on docker to store checkpoint. 
+
+- `containers:` the setting of docker containers.
+  
+  - ***<u>`env:`</u>***  environment variables set when the container is created.
+  
+  - ***<u>`image:`</u>*** where is the docker image.
+  
+  - `imagePullPolicy：` the policy of pulling image.
+    
+    - Always: always pull image from repo.
+    
+    - IfNotPresent: the image is pulled only if it is not already present locally.
+    
+    - Never: never try fetching the image.
+  
+  - *<u>**`args:`**</u>* command executed after container created.
+  
+  - `volumeMounts:` the mounted volume in container.
+    
+    - `mountPath:` the path of volumn.
+    
+    - `name:` the name of mounted volume.
+  
+  - `resources:` the resource of requested by pod.
+    
+    - `limits:` the max num.
+    
+    - `requests:` the min num.
+
+#### 4. Args setting
+
+- replicas: 
+  
+  - Cheif：<u>***can only be 1***</u>. When there are no other worker and ps, it's stand-alone training.
+  
+  - Woker: set to 8.
+  
+  - Ps: set to 4.
+
+- resources: set both `limits` and `requests` to 8 to align with stand-alone training hardware config.
+
+- image: set docker image.
+
+- env: 
+  
+  - for model training set: refer to stand-alone setting. Note that jemalloc setting change to `MEM_USAGE_STRATEGY`, unable by  `close` (for stock tf 1.15.5) and enable by `251` (for DeepRec) .
+  
+  - for `launch.py`:
+    
+    - `TF_SCRIPT`: the model training python script name.
+    
+    - `TF_WORKSPACE`: work space.
+
+- args: run  `launch.py` to call model training script, which is used to set some distributed training config and the args will be passed to model training script. So, Refer to stand-alone setting to set the parameters of `launch.py`. In addition, there are some settings that need to be set.
+  
+  - `--save_steps=5000`: set steps of saving checkpoint, cannot be too small, because every save takes time
+  
+  - `--output_dir=/pvc`: set to the mounted shared volumn.
+  
+  - `--protocol=grpc`: `grpc`,`grpc++` and `star_server` . Stock TF only support grpc!
+  
+  - `--input_layer_partitioner=8`: slice size of input layer partitioner, units MB. Set to 8.
+  
+  - `--inter` and `--intra`: both set to 8.
+
+***Differe setting for stock tf and DeepRec:***
+
+- Stock TF:
+  
+  - Set ENV `MEM_USAGE_STRATEGY`to `close`.
+  
+  - Set `--protocol=grpc`.
+
+- DeepRec:
+  
+  - Enable DeepRec feature in stand-alone training except for jemalloc, which enabled in a different way.
+  
+  - Set ENV `MEM_USAGE_STRATEGY` to `251`.
+  
+  - Test three cases of `--protocol`.
+  
+  - Test FP32 and BF16 cases. Enable BF16 by add `--bf16` in args.
+
+#### 5. Create training job
+
+- run `kubectl create -f test.yaml` to create a KubeFlow/TFjob.
+
+- run `kubectl get tfjob -o wide` to check tfjob's status.
+
+- run `kubectl get pods -o wide` to see status of tfjob's pod,
+  
+  run `watch -n 1 kubectl get pods -o wide` to auto refresh status.
+
+- After all pods running, run `kubectl logs -f trainer-chief-0` to get chief's log.
+  
+  run `kubectl logs -f trainer-chief-0 | tee test.log` to save log to log file and show log in screen.
+
+- After training completed, run `kubectl delete tfjob trainer` to delete tfjob.
+  
+  Note: Chief's log won't tell you training is completed, Chief and PS are still running when training complete, but Worker's status turns to completed.
+
+#### 6. Get into pod's image
+
+`kubectl exec -it <pod> -- /bin/bash`
