@@ -43,9 +43,12 @@
        ```
    3. Set env for ***DeepRec!!***
       ```
-      export TF_LAYOUT_PASS_GRAPH_ENABLE_ONLY_WHITE_LIST=1
+      # export TF_MKL_PRIMITIVE_ONLY_FOR_RECO=1
       export TF_LAYOUT_PASS_GRAPH_CAST_FUSION=1
       ```
+      - `TF_MKL_PRIMITIVE_ONLY_FOR_RECO` is default to open now.
+      - `TF_LAYOUT_PASS_GRAPH_CAST_FUSION` is not yet merged into master branch.
+
    4. Enable smartstaged feature:  
       add `--smartstaged` parameter when running python script, like  
       `python train.py --steps 3000 --no_eval --smartstaged`
