@@ -39,7 +39,7 @@
 
        LD_PRELOAD=./libjemalloc.so.2.5.1 $(TEST_CMD)
        # for example
-       # LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --bf16
+       # LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --bf16 --no_eval
        ```
    3. Set env for ***DeepRec!!***
       ```
@@ -49,10 +49,6 @@
       - `TF_MKL_PRIMITIVE_ONLY_FOR_RECO` is default to open now.
       - `TF_LAYOUT_PASS_GRAPH_CAST_FUSION` is not yet merged into master branch.
 
-   4. Enable smartstaged feature:  
-      add `--smartstaged` parameter when running python script, like  
-      `python train.py --steps 3000 --no_eval --smartstaged`
-
 4. Run python script  
     Record gsteps data after stable operation and drop abnormal data, for examlpe, in `3000 steps` case, record the last ten and then calculate average.  
     Memory usage recorded in the same steps for each test, like 2500 steps.  
@@ -60,23 +56,29 @@
    - Only benchmark gsteps/sec:
      - FP32
         ```
-        # Don't forget to enable DeepRec feature for DeepRec test.
+        # Don't forget to enable DeepRec feature for DeepRec test !!!!
         python train.py --steps 3000 --no_eval
+
+        # For DeepRec after enabling jemalloc.
+        LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --no_eval
         ```
      - BF16 ***(only for DeepRec!!!)***
         ```
-        # Don't forget to enable DeepRec feature for DeepRec test.
+        # Don't forget to enable DeepRec feature for DeepRec test !!!!
         python train.py --steps 3000 --no_eval --bf16
+
+        # For DeepRec after enabling jemalloc.
+        LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --no_eval --bf16
         ```
    - Benchmark ACC, AUC and gsteps/sec:
      - FP32
         ```
-        # Don't forget to enable DeepRec feature for DeepRec test.
+        # Don't forget to enable DeepRec feature for DeepRec test !!!!
         python train.py
         ```
      - BF16 ***(only for DeepRec!!!)***
         ```
-        # Don't forget to enable DeepRec feature for DeepRec test.
+        # Don't forget to enable DeepRec feature for DeepRec test !!!!
         python train.py --bf16
         ```
 
