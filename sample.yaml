@@ -10,6 +10,19 @@ spec:
       restartPolicy: Never
       template:
         spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: replica-type
+                          operator: In
+                          values:
+                            - worker
+                            - chief
+                    topologyKey: kubernetes.io/hostname
           volumes:
             - name: deeprec-storage
               persistentVolumeClaim:
@@ -20,27 +33,22 @@ spec:
                 - name: "TF_WORKSPACE"
                   value: "/root/"
                 - name: "TF_SCRIPT"
-                  value: "train.py"
+                  value: "train_wdl.py"
                 - name: "MEM_USAGE_STRATEGY"
                   value: "close"
-              image: duyi/wdl_deeprec:1.4
+              image: duyi/modelzoo_tf:1.0
               imagePullPolicy: Always
               workingDir: /root/
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8",
+                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
                   name: "deeprec-storage"
-              resources:
-                limits:
-                  cpu: 8 
-                requests:
-                  cpu: 8
     Worker:
-      replicas: 8
+      replicas: 9
       restartPolicy: Never
       template:
         spec:
@@ -55,6 +63,7 @@ spec:
                           operator: In
                           values:
                             - worker
+                            - chief
                     topologyKey: kubernetes.io/hostname
           volumes:
             - name: deeprec-storage
@@ -66,25 +75,20 @@ spec:
                 - name: "TF_WORKSPACE"
                   value: "/root/"
                 - name: "TF_SCRIPT"
-                  value: "train.py"
+                  value: "train_wdl.py"
                 - name: "MEM_USAGE_STRATEGY"
                   value: "close"
-              image: duyi/wdl_deeprec:1.4
+              image: duyi/modelzoo_tf:1.0
               imagePullPolicy: Always
               workingDir: /root/
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8",
+                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
                   name: "deeprec-storage"
-              resources:
-                limits:
-                  cpu: 8 
-                requests:
-                  cpu: 8
     PS:
       replicas: 4
       restartPolicy: Never
@@ -112,22 +116,17 @@ spec:
                 - name: "TF_WORKSPACE"
                   value: "/root/"
                 - name: "TF_SCRIPT"
-                  value: "train.py"
+                  value: "train_wdl.py"
                 - name: "MEM_USAGE_STRATEGY"
                   value: "close"
-              image: duyi/wdl_deeprec:1.4
+              image: duyi/modelzoo_tf:1.0
               imagePullPolicy: Always
               workingDir: /root/
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8",
+                  "cd /root/; python launch.py --save_steps=5000 --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
                   name: "deeprec-storage"
-              resources:
-                limits:
-                  cpu: 8 
-                requests:
-                  cpu: 8

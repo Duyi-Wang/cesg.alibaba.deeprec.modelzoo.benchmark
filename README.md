@@ -100,7 +100,7 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
 
 - ***<u>`replicas: ` </u>*** the num of copies of pod(chief, worker and ps).
 
-- `affinity:podAntiAffinity:` antiaffinity setting to distribute pods on different nodes as much as possible. Not need to Cheif, because there is only one Cheif.
+- `affinity:podAntiAffinity:` antiaffinity setting to distribute pods on different nodes as much as possible.
 
 - `volumes:` the statement of shared storage that will be mounted on docker to store checkpoint. 
 
@@ -125,12 +125,6 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
     - `mountPath:` the path of volumn.
     
     - `name:` the name of mounted volume.
-  
-  - `resources:` the resource of requested by pod.
-    
-    - `limits:` the max num.
-    
-    - `requests:` the min num.
 
 #### 4. Args setting
 
@@ -165,6 +159,8 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   - `--protocol=grpc`: `grpc`,`grpc++` and `star_server` . Stock TF only support grpc!
   
   - `--input_layer_partitioner=8`: slice size of input layer partitioner, units MB. Set to 8.
+
+  - `--dense_layer_partitioner=8`: slice size of dense layer partitioner, units MB. Set to 16.
   
   - `--inter` and `--intra`: both set to 8.
 
