@@ -130,13 +130,9 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
 
 - replicas: 
   
-  - Cheif：<u>***can only be 1***</u>. When there are no other worker and ps, it's stand-alone training.
-  
-  - Woker: set to 8.
+  - Woker: set to 10.
   
   - Ps: set to 4.
-
-- resources: set both `limits` and `requests` to 8 to align with stand-alone training hardware config.
 
 - image: set docker image.
 
@@ -156,11 +152,11 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   
   - `--output_dir=/pvc`: set to the mounted shared volumn.
   
-  - `--protocol=grpc`: `grpc`,`grpc++` and `star_server` . Stock TF only support grpc!
+  - `--protocol=grpc`: `set to grpc protocol`!
   
   - `--input_layer_partitioner=8`: slice size of input layer partitioner, units MB. Set to 8.
 
-  - `--dense_layer_partitioner=8`: slice size of dense layer partitioner, units MB. Set to 16.
+  - `--dense_layer_partitioner=16`: slice size of dense layer partitioner, units MB. Set to 16.
   
   - `--inter` and `--intra`: both set to 8.
 
@@ -169,16 +165,12 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
 - Stock TF:
   
   - Set ENV `MEM_USAGE_STRATEGY`to `close`.
-  
-  - Set `--protocol=grpc`.
 
 - DeepRec:
   
   - Enable DeepRec feature in stand-alone training except for jemalloc, which enabled in a different way.
   
   - Set ENV `MEM_USAGE_STRATEGY` to `251`.
-  
-  - Test three cases of `--protocol`.
   
   - Test FP32 and BF16 cases. Enable BF16 by add `--bf16` in args.
 
