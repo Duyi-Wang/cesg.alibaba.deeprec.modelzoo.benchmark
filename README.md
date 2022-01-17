@@ -184,7 +184,7 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   
   run `watch -n 1 kubectl get pods -o wide` to auto refresh status.
 
-- After all pods running, run `kubectl logs -f trainer-chief-0` to get chief's log.
+- After all pods running, run `kubectl logs -f trainer-worker-0` to get chief's log.
   
   run `kubectl logs -f trainer-chief-0 | tee test.log` to save log to log file and show log in screen.
 
