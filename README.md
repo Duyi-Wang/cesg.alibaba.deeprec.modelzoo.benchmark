@@ -98,7 +98,7 @@ Please keep the <u>***containers setting***</u> of Cheif, Worker and PS the same
 
 Pod's template <u>***(The underlined ones need attention)***</u>:
 
-- ***<u>`replicas: ` </u>*** the num of copies of pod(chief, worker and ps).
+- ***<u>`replicas: ` </u>*** the num of copies of pod(worker and ps).
 
 - `affinity:podAntiAffinity:` antiaffinity setting to distribute pods on different nodes as much as possible.
 
@@ -109,14 +109,6 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   - ***<u>`env:`</u>***  environment variables set when the container is created.
   
   - ***<u>`image:`</u>*** where is the docker image.
-  
-  - `imagePullPolicy：` the policy of pulling image.
-    
-    - Always: always pull image from repo.
-    
-    - IfNotPresent: the image is pulled only if it is not already present locally.
-    
-    - Never: never try fetching the image.
   
   - *<u>**`args:`**</u>* command executed after container created.
   
@@ -184,14 +176,11 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   
   run `watch -n 1 kubectl get pods -o wide` to auto refresh status.
 
-- After all pods running, run `kubectl logs -f trainer-worker-0` to get chief's log.
+- After all pods running, run `kubectl logs -f trainer-worker-0` to get training log.
   
-  run `kubectl logs -f trainer-chief-0 | tee test.log` to save log to log file and show log in screen.
+  run `kubectl logs -f trainer-worker-0 | tee test.log` to save log to log file and show log in screen.
 
 - After training completed, run `kubectl delete tfjob trainer` to delete tfjob.
   
-  Note: Chief's log won't tell you training is completed, Chief and PS are still running when training complete, but Worker's status turns to completed.
+  Note: training log won't tell you training is completed, worker-0 and PS are still running when training complete, but other Worker's status turns to completed.
 
-#### 6. Get into pod's image
-
-`kubectl exec -it <pod> -- /bin/bash`
