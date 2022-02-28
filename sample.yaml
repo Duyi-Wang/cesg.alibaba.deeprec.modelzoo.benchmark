@@ -30,10 +30,12 @@ spec:
           containers:
             - name: tensorflow
               env:
+                - name: "JEMALLOC_PATH"
+                  value: "/root/modelzoo/"
                 - name: "TF_WORKSPACE"
                   value: "/root/"
                 - name: "TF_SCRIPT"
-                  value: "train_wdl.py"
+                  value: "train.py"
                 - name: "MEM_USAGE_STRATEGY"
                   value: "251"
                 - name: "START_STATISTIC_STEP"
@@ -46,7 +48,7 @@ spec:
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
+                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
@@ -75,10 +77,12 @@ spec:
           containers:
             - name: tensorflow
               env:
+                - name: "JEMALLOC_PATH"
+                  value: "/root/modelzoo/"
                 - name: "TF_WORKSPACE"
                   value: "/root/"
                 - name: "TF_SCRIPT"
-                  value: "train_wdl.py"
+                  value: "train.py"
                 - name: "MEM_USAGE_STRATEGY"
                   value: "251"
                 - name: "START_STATISTIC_STEP"
@@ -91,7 +95,7 @@ spec:
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
+                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"

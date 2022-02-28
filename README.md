@@ -1,4 +1,39 @@
 # DeepRec ModelZoo Benchmark
+- [How to build whl package](#how-to-build-whl-package)
+- [Stand-alone benchmark](#stand-alone-benchmark)
+- [How to benchmark distributed training in K8S](#how-to-benchmark-distributed-training-in-k8s)
+
+## How to build whl package
+```
+docker pull registry.cn-shanghai.aliyuncs.com/pai-dlc-share/deeprec-developer:deeprec-dev-cpu-py36-ubuntu18.04
+
+# download or clone the DeepRec code to current directory
+
+docker run -it --rm -v $PWD/DeepRec:/root/ registry.cn-shanghai.aliyuncs.com/pai-dlc-share/deeprec-developer:deeprec-dev-cpu-py36-ubuntu18.04 /bin/bash
+# in docker do:
+cd /root/DeepRec
+mkl_opts="--config=mkl_threadpool \
+           --define build_with_mkl_dnn_v1_only=true \
+           --copt=-DENABLE_INTEL_MKL_BFLOAT16 \
+           --copt=-march=skylake-avx512"
+default_opts="--remote_cache=http://crt-e302.sh.intel.com:9092 \
+             --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
+             --copt=-O2 \
+             --copt=-Wformat \
+             --copt=-Wformat-security \
+             --copt=-fstack-protector \
+             --copt=-fPIC \
+             --copt=-fpic \
+             --linkopt=-znoexecstack \
+             --linkopt=-zrelro \
+             --linkopt=-znow \
+             --linkopt=-fstack-protector"
+yes "" | bash ./configure &&  bazel build ${default_opts} ${mkl_opts} tensorflow/tools/pip_package:build_pip_package \
+  && mkdir -p ./wheels/tensorflow \
+  && bazel-bin/tensorflow/tools/pip_package/build_pip_package --project_name tensorflow ${_}
+```
+get tensorflow-1.15.5+deeprec2110-cp36-cp36m-linux_x86_64.whl at $PWD/DeepRec/wheels/tensorflow/
+
 ## Stand-alone benchmark
 ### Benchmark preparation
 1. Install python **3.6**, please note version is **3.6**
@@ -43,10 +78,8 @@
        ```
    3. Set env for ***DeepRec!!***
       ```
-      # export TF_MKL_PRIMITIVE_ONLY_FOR_RECO=1
       export TF_LAYOUT_PASS_GRAPH_CAST_FUSION=1
       ```
-      - `TF_MKL_PRIMITIVE_ONLY_FOR_RECO` is default to open now.
       - `TF_LAYOUT_PASS_GRAPH_CAST_FUSION` is not yet merged into master branch.
 
 4. Run python script  
@@ -64,9 +97,6 @@
         ```
      - BF16 ***(only for DeepRec!!!)***
         ```
-        # Don't forget to enable DeepRec feature for DeepRec test !!!!
-        python train.py --steps 3000 --no_eval --bf16
-
         # For DeepRec after enabling jemalloc.
         LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --no_eval --bf16
         ```
@@ -82,17 +112,17 @@
         python train.py --bf16
         ```
 
-### How to benchmark distributed training in K8S
+## How to benchmark distributed training in K8S
 
-#### 1. Prepare a K8S cluster
+### 1. Prepare a K8S cluster
 
 `kubectl get nodes -o wide` shows the nodes of K8S cluster.
 
-#### 2. Prepare docker image
+### 2. Prepare docker image
 
 Place image into where each node can access it, like docker-hub's official repo.
 
-#### 3. Prepare yaml file to create training job.
+### 3. Prepare yaml file to create training job.
 
 Please keep the <u>***containers setting***</u> of Cheif, Worker and PS the same.
 
@@ -118,7 +148,7 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
     
     - `name:` the name of mounted volume.
 
-#### 4. Args setting
+### 4. Args setting
 
 - replicas: 
   
@@ -133,14 +163,15 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   - for model training set: refer to stand-alone setting. Note that jemalloc setting change to `MEM_USAGE_STRATEGY`, unable by  `close` (for stock tf 1.15.5) and enable by `251` (for DeepRec) .
   
   - for `launch.py`:
-    
+    - `JEMALLOC_PATH`: path to jemalloc .so file.
+
     - `TF_SCRIPT`: the model training python script name.
     
     - `TF_WORKSPACE`: work space.
 
 - args: run  `launch.py` to call model training script, which is used to set some distributed training config and the args will be passed to model training script. So, Refer to stand-alone setting to set the parameters of `launch.py`. In addition, there are some settings that need to be set.
   
-  - `--save_steps=5000`: set steps of saving checkpoint, cannot be too small, because every save takes time
+  - `--save_steps=5000`: set steps of saving checkpoint, cannot be too small, because every save takes time.
   
   - `--output_dir=/pvc`: set to the mounted shared volumn.
   
@@ -164,9 +195,9 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
   
   - Set ENV `MEM_USAGE_STRATEGY` to `251`.
   
-  - Test FP32 and BF16 cases. Enable BF16 by add `--bf16` in args.
+  - Test FP32 and BF16 cases. Enable BF16 by add `--bf16` in args for `launch.py`.
 
-#### 5. Create training job
+### 5. Create training job
 
 - run `kubectl create -f test.yaml` to create a KubeFlow/TFjob.
 
