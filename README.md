@@ -16,8 +16,7 @@ mkl_opts="--config=mkl_threadpool \
            --define build_with_mkl_dnn_v1_only=true \
            --copt=-DENABLE_INTEL_MKL_BFLOAT16 \
            --copt=-march=skylake-avx512"
-default_opts="--remote_cache=http://crt-e302.sh.intel.com:9092 \
-             --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
+default_opts="--cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
              --copt=-O2 \
              --copt=-Wformat \
              --copt=-Wformat-security \
