@@ -21,7 +21,6 @@ spec:
                           operator: In
                           values:
                             - worker
-                            - chief
                     topologyKey: kubernetes.io/hostname
           volumes:
             - name: deeprec-storage
@@ -33,7 +32,7 @@ spec:
                 - name: "JEMALLOC_PATH"
                   value: "/root/modelzoo/"
                 - name: "TF_WORKSPACE"
-                  value: "/root/"
+                  value: "/root/modelzoo/DeepFM"
                 - name: "TF_SCRIPT"
                   value: "train.py"
                 - name: "MEM_USAGE_STRATEGY"
@@ -42,13 +41,13 @@ spec:
                   value: "100"
                 - name: "STOP_STATISTIC_STEP"
                   value: "200"
-              image: registry.cn-beijing.aliyuncs.com/duyi/modelzoo_deeprec:1.0
+              image: cesg-prc-registry.cn-beijing.cr.aliyuncs.com/cesg-ali/deeprec-modelzoo:latest
               imagePullPolicy: Always
               workingDir: /root/
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
+                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16 ",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
@@ -80,7 +79,7 @@ spec:
                 - name: "JEMALLOC_PATH"
                   value: "/root/modelzoo/"
                 - name: "TF_WORKSPACE"
-                  value: "/root/"
+                  value: "/root/modelzoo/DeepFM/"
                 - name: "TF_SCRIPT"
                   value: "train.py"
                 - name: "MEM_USAGE_STRATEGY"
@@ -89,13 +88,13 @@ spec:
                   value: "100"
                 - name: "STOP_STATISTIC_STEP"
                   value: "200"
-              image: registry.cn-beijing.aliyuncs.com/duyi/modelzoo_deeprec:1.0
+              image: cesg-prc-registry.cn-beijing.cr.aliyuncs.com/cesg-ali/deeprec-modelzoo:latest
               imagePullPolicy: Always
               workingDir: /root/
               command: ["/bin/sh", "-c"]
               args:
                 [
-                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16",
+                  "cd /root/modelzoo/; python launch.py --output_dir=/pvc --protocol=grpc --inter=8 --intra=8 --input_layer_partitioner=8 --dense_layer_partitioner=16 ",
                 ]
               volumeMounts:
                 - mountPath: "/pvc"
