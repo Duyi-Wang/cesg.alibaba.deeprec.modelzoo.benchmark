@@ -9,7 +9,7 @@ docker pull registry.cn-shanghai.aliyuncs.com/pai-dlc-share/deeprec-developer:de
 
 # download or clone the DeepRec code to current directory
 
-docker run -it --rm -v $PWD/DeepRec:/root/ registry.cn-shanghai.aliyuncs.com/pai-dlc-share/deeprec-developer:deeprec-dev-cpu-py36-ubuntu18.04 /bin/bash
+docker run -it --rm -v $PWD/DeepRec:/root/DeepRec registry.cn-shanghai.aliyuncs.com/pai-dlc-share/deeprec-developer:deeprec-dev-cpu-py36-ubuntu18.04 /bin/bash
 # in docker do:
 cd /root/DeepRec
 mkl_opts="--config=mkl_threadpool \
