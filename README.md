@@ -65,7 +65,7 @@ get tensorflow-1.15.5+deeprec2110-cp36-cp36m-linux_x86_64.whl at $PWD/DeepRec/wh
    1. Enable TensorPoolAllocator option.
        ```
        export START_STATISTIC_STEP=100
-       export STOP_STATISTIC_STEP=200
+       export STOP_STATISTIC_STEP=110
        ```
    2. Set jemalloc(Version 2.5.4) env.
        ```
