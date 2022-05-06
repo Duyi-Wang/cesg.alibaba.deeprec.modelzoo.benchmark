@@ -13,8 +13,6 @@ docker run -it --rm -v $PWD/DeepRec:/root/DeepRec registry.cn-shanghai.aliyuncs.
 # in docker do:
 cd /root/DeepRec
 mkl_opts="--config=mkl_threadpool \
-           --define build_with_mkl_dnn_v1_only=true \
-           --copt=-DENABLE_INTEL_MKL_BFLOAT16 \
            --copt=-march=skylake-avx512"
 default_opts="--cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
              --copt=-O2 \
@@ -90,6 +88,8 @@ get tensorflow-1.15.5+deeprec2110-cp36-cp36m-linux_x86_64.whl at $PWD/DeepRec/wh
         ```
         # Don't forget to enable DeepRec feature for DeepRec test !!!!
         python train.py --steps 3000 --no_eval
+        # For stock tf test
+        python train.py --steps 3000 --no_eval --tf
 
         # For DeepRec after enabling jemalloc.
         LD_PRELOAD=./libjemalloc.so.2.5.1 python train.py --steps 3000 --no_eval
@@ -103,6 +103,8 @@ get tensorflow-1.15.5+deeprec2110-cp36-cp36m-linux_x86_64.whl at $PWD/DeepRec/wh
      - FP32
         ```
         # Don't forget to enable DeepRec feature for DeepRec test !!!!
+        python train.py
+        # For stock tf test
         python train.py
         ```
      - BF16 ***(only for DeepRec!!!)***
@@ -187,6 +189,7 @@ Pod's template <u>***(The underlined ones need attention)***</u>:
 - Stock TF:
   
   - Set ENV `MEM_USAGE_STRATEGY`to `close`.
+  - Args add `--tf`.
 
 - DeepRec:
   
