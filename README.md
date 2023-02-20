@@ -15,7 +15,7 @@ cd /root/DeepRec
 mkl_opts="--config=mkl_threadpool \
            --copt=-march=skylake-avx512"
 default_opts="--cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
-             --copt=-O2 \
+             --copt=-O3 \
              --copt=-Wformat \
              --copt=-Wformat-security \
              --copt=-fstack-protector \
